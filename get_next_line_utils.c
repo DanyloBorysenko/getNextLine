@@ -6,11 +6,13 @@
 /*   By: danborys <borysenkodanyl@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 17:37:58 by danborys          #+#    #+#             */
-/*   Updated: 2025/11/19 15:01:58 by danborys         ###   ########.fr       */
+/*   Updated: 2025/11/22 14:29:39 by danborys         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -28,7 +30,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	{
 		ptr[i] = s1[i];
 		i++;
-	}	
+	}
 	j = 0;
 	while (s2[j])
 	{
@@ -59,6 +61,33 @@ char	*ft_calloc(size_t nmemb, size_t size)
 		i++;
 	}
 	return (ptr);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*sub;
+	size_t	s_len;
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+		return (ft_calloc(1, sizeof(char)));
+	if (len > s_len - start)
+		len = s_len - start;
+	if (len == 0)
+		return (ft_calloc(1, sizeof(char)));
+	sub = ft_calloc((len + 1), sizeof(char));
+	if (!sub)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		sub[i] = s[start + i];
+		i++;
+	}
+	return (sub);
 }
 
 char	*ft_strchr(const char *s, char c)
