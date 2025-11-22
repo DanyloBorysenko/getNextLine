@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: danborys <borysenkodanyl@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 17:20:57 by danborys          #+#    #+#             */
-/*   Updated: 2025/11/22 17:50:56 by danborys         ###   ########.fr       */
+/*   Updated: 2025/11/22 18:27:45 by danborys         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
@@ -63,10 +63,24 @@ char	*trim_rem(char	*rem, char *del)
 	free(rem);
 	return (new_rem);
 }
+char *find_rem(t_fd_rem fd_map[], int fd)
+{
+	size_t i;
+	
+	i = 0;
+	while (i < 1024)
+	{
+		
+		i++;
+	}
+	
+	
+}
 
 char	*get_next_line(int fd)
 {
-	static char	*rem = NULL;
+	char	*rem;
+	static t_fd_rem fd_map[1024];
 	char		*line;
 	char		*del;
 
@@ -88,6 +102,7 @@ char	*get_next_line(int fd)
 	rem = trim_rem(rem, del);
 	return (line);
 }
+
 // int main(void)
 // {
 // 	//_________________Test 1_____________________
