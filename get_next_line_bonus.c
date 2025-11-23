@@ -6,7 +6,7 @@
 /*   By: danborys <borysenkodanyl@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 17:20:57 by danborys          #+#    #+#             */
-/*   Updated: 2025/11/22 18:27:45 by danborys         ###   ########.fr       */
+/*   Updated: 2025/11/23 15:26:20 by danborys         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,108 +63,154 @@ char	*trim_rem(char	*rem, char *del)
 	free(rem);
 	return (new_rem);
 }
-char *find_rem(t_fd_rem fd_map[], int fd)
+
+size_t	find_index(t_fd_rem *fd_map[], int fd)
 {
-	size_t i;
-	
-	i = 0;
-	while (i < 1024)
+	t_fd_rem *ptr;
+
+	if (fd_map[fd])
+		return (fd);
+	ptr = malloc(sizeof(t_fd_rem));
+	if (!ptr)
+		return (0);
+	fd_map[fd] = ptr;
+	ptr->fd = fd;
+	ptr->rem = ft_calloc(1, sizeof(char));
+	if (ptr->rem == NULL)
 	{
-		
-		i++;
+		free(ptr);
+		return (0);
 	}
-	
-	
+	return (fd);
 }
 
 char	*get_next_line(int fd)
 {
-	char	*rem;
-	static t_fd_rem fd_map[1024];
+	static t_fd_rem *fd_map[10];
+	size_t	ind;
 	char		*line;
 	char		*del;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (rem == NULL)
-		rem = ft_calloc(1, sizeof(char));
-	rem = read_fd(fd, rem);
-	if (!rem)
-		return (NULL);
-	if (*rem == '\0')
+	ind = find_index(fd_map, fd);
+	fd_map[ind]->rem = read_fd(fd, fd_map[ind]->rem);
+	if (!fd_map[ind]->rem)
 	{
-		free(rem);
-		rem = NULL;
+		free(fd_map[ind]);
+		fd_map[ind] = NULL;
+		return (NULL);	
+	}
+	if (*(fd_map[ind]->rem) == '\0')
+	{
+		free(fd_map[ind]->rem);
+		fd_map[ind]->rem = NULL;
+		free(fd_map[ind]);
+		fd_map[ind] = NULL;
 		return (NULL);
 	}
-	del = ft_strchr(rem, '\n');
-	line = extract_line(rem, del);
-	rem = trim_rem(rem, del);
+	del = ft_strchr(fd_map[ind]->rem, '\n');
+	line = extract_line(fd_map[ind]->rem, del);
+	fd_map[ind]->rem = trim_rem(fd_map[ind]->rem, del);
+	if (!fd_map[ind]->rem)
+	{
+		free(fd_map[ind]);
+		fd_map[ind] = NULL;
+	}
 	return (line);
 }
 
-// int main(void)
-// {
-// 	//_________________Test 1_____________________
-//     printf("Test 1: file contains \"\\n\\n\"\n");
-//     char *file = "file.txt";
-//     char str[100] = "\n\n";
-//     char *result;
-//     size_t len = strlen(str);
+int main(void)
+{
+	// _________________Test 1_____________________
+    printf("Test 1: file contains \"\\n\\n\"\n");
+    char *file = "file.txt";
+    char str[100] = "\n\n";
+    char *result;
+    size_t len = strlen(str);
 
-//     int fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0644);
-//     write(fd, str, len);
-//     lseek(fd, 0, SEEK_SET);
+    int fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0644);
+    write(fd, str, len);
+    lseek(fd, 0, SEEK_SET);
 
-//     result = get_next_line(fd);
-//     printf("Line 1: %s", result);
-//     free(result);
+    result = get_next_line(fd);
+    printf("Line 1: %s", result);
+    free(result);
 
-//     result = get_next_line(fd);
-//     printf("Line 2: %s", result);
-//     free(result);
+    result = get_next_line(fd);
+    printf("Line 2: %s", result);
+    free(result);
 
-//     result = get_next_line(fd);
-//     printf("Line 3: %s\n", result);
-//     free(result);
-//     close(fd);
+    result = get_next_line(fd);
+    printf("Line 3: %s\n", result);
+    free(result);
+    close(fd);
 
-// 	//_________________Test 2_____________________
-// 	printf("\nTest 2: empty file\n");
-// 	fd = open("empty.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
-// 	lseek(fd, 0, SEEK_SET);
+	//_________________Test 2_____________________
+	printf("\nTest 2: empty file\n");
+	fd = open("empty.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	lseek(fd, 0, SEEK_SET);
 
-// 	result = get_next_line(fd);
-// 	printf("Result: %s\n", result ? result : "NULL");
-// 	free(result);
-// 	close(fd);
+	result = get_next_line(fd);
+	printf("Result: %s\n", result ? result : "NULL");
+	free(result);
+	close(fd);
 
-// 	//_________________Test 3_____________________
-// 	printf("\nTest 3: \"Hello World\" (no newline)\n");
-// 	fd = open("single_no_nl.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
-// 	write(fd, "Hello World", 11);
-// 	lseek(fd, 0, SEEK_SET);
+	//_________________Test 3_____________________
+	printf("\nTest 3: \"Hello World\" (no newline)\n");
+	fd = open("single_no_nl.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	write(fd, "Hello World", 11);
+	lseek(fd, 0, SEEK_SET);
 
-// 	result = get_next_line(fd);
-// 	printf("Result: %s\n", result);
-// 	free(result);
+	result = get_next_line(fd);
+	printf("Result: %s\n", result);
+	free(result);
 
-// 	result = get_next_line(fd);
-// 	printf("Second call (should be NULL): %s\n", result ? result : "NULL");
-// 	close(fd);
+	result = get_next_line(fd);
+	printf("Second call (should be NULL): %s\n", result ? result : "NULL");
+	close(fd);
 
-// 	//_________________Test 4_____________________
-// 	printf("\nTest 4: multiple lines\n");
-// 	fd = open("multi.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
-// 	write(fd, "A\nB\nC\n", 6);
-// 	lseek(fd, 0, SEEK_SET);
+	//_________________Test 4_____________________
+	printf("\nTest 4: multiple lines\n");
+	fd = open("multi.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	write(fd, "A\nB\nC\n", 6);
+	lseek(fd, 0, SEEK_SET);
 
-// 	for (int i = 1; i <= 4; i++)
-// 	{
-//     	result = get_next_line(fd);
-//     	printf("Line %d: %s", i, result ? result : "NULL\n");
-//     	free(result);
-// 	}
-// 	close(fd);
-//     return (0);
-// }
+	for (int i = 1; i <= 4; i++)
+	{
+    	result = get_next_line(fd);
+    	printf("Line %d: %s", i, result ? result : "NULL\n");
+    	free(result);
+	}
+	close(fd);
+
+	//_________________Test 5_____________________
+	printf("\nTest 5: multiple fd\n");
+	int fd1 = open("file1.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	int fd2 = open("file2.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	int fd3 = open("file3.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	
+	write(fd1, "A\nB\nC\n", 6);
+	write(fd2, "D\nE\nF\n", 6);
+	write(fd3, "G\nH\nI\n", 6);
+	
+	lseek(fd1, 0, SEEK_SET);
+	lseek(fd2, 0, SEEK_SET);
+	lseek(fd3, 0, SEEK_SET);
+	
+	for (int i = 1; i < 4; i++)
+	{
+		result = get_next_line(fd1);
+    	printf("Fd 1 Line %d: %s", i, result ? result : "NULL\n");
+		free(result);
+
+		result = get_next_line(fd2);
+    	printf("Fd 2 Line %d: %s", i, result ? result : "NULL\n");
+		free(result);
+
+		result = get_next_line(fd3);
+    	printf("Fd 3 Line %d: %s", i, result ? result : "NULL\n");
+		free(result);
+	}
+    return (0);
+}
