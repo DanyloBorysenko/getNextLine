@@ -6,7 +6,7 @@
 /*   By: danborys <borysenkodanyl@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 17:22:09 by danborys          #+#    #+#             */
-/*   Updated: 2025/11/22 17:45:40 by danborys         ###   ########.fr       */
+/*   Updated: 2025/11/24 10:46:42 by danborys         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,6 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <limits.h>
-
-typedef struct fd_rem
-{
-	int		fd;
-	char	*rem;
-}			t_fd_rem;
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
